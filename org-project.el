@@ -173,8 +173,10 @@ in `op-subtask-series'."
   (let* ((current  (save-excursion
                      (ignore-errors (org-back-to-heading))
                      (org-element-at-point)))
-         (endpt    (org-element-property :end current))
-         (clevel   (org-element-property :level current))
+         (endpt    (or (org-element-property :end current)
+                       (point)))
+         (clevel   (or (org-element-property :level current)
+                       1))
          (todo     (or todo op-default-todo))
          (master   (cond
                     ((stringp op-master-todo)
