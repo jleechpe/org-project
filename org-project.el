@@ -154,8 +154,7 @@ and todo state."
                                                  (:raw-value
                                                   ,(op-create-timestamp
                                                     sched))))))))
-    (org-element-adopt-elements headline planning)
-    ))
+    (org-element-adopt-elements headline planning)))
 
 (defun op-create-project (name category initial &optional level todo)
   "NAME is the top level headline for the project and INITIAL is the due date.
@@ -171,14 +170,19 @@ in `op-subtask-series'."
     (read-string "Project Name: ")
     (read-string "Agenda Category (leave blank for project name): ")
     (org-read-date 'nil 'nil 'nil "Due date: ")))
-  (let* ((todo     (or todo op-default-todo))
+  (let* ((current  (save-excursion
+                     (ignore-errors (org-back-to-heading))
+                     (org-element-at-point)))
+         (endpt    (org-element-property :end current))
+         (clevel   (org-element-property :level current))
+         (todo     (or todo op-default-todo))
          (master   (cond
                     ((stringp op-master-todo)
                      op-master-todo)
                     ('t todo)
                     ('nil 'nil)))
          (initial  (org-read-date 'nil 't initial))
-         (level    (or level 1))
+         (level    (or level clevel))
          (schedule (if op-planning-deadline 'nil initial))
          (deadline (if op-planning-deadline initial 'nil))
          (category (or category name))
@@ -206,9 +210,10 @@ in `op-subtask-series'."
                                             :deadline ,deadline
                                             :todo ,todo)))
                            (op-create-headline task)))))
-    (message "%s | %S" category cat)
-    (insert (org-element-interpret-data
-             (apply 'org-element-adopt-elements toplevel cat subproj)))))
+    (org-save-outline-visibility 't
+      (goto-char endpt)
+      (insert (org-element-interpret-data
+               (apply 'org-element-adopt-elements toplevel cat subproj))))))
 
 (provide 'org-project)
 ;;; org-project.el ends here
