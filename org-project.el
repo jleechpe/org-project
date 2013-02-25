@@ -25,7 +25,7 @@
 ;; useful for projects where the deadlines are predefined for any
 ;; given project.
 ;;
-;; Project insertion is called with op-create-scheduling, which
+;; Project insertion is called with `op-create-project', which
 ;; prompts for the project name, the category (for use in Agenda
 ;; views), and the final due date.  All other dates are calculated
 ;; using the offset in `op-subtask-series'.
@@ -157,7 +157,7 @@ and todo state."
     (org-element-adopt-elements headline planning)
     ))
 
-(defun op-create-scheduling (name category initial &optional level todo)
+(defun op-create-project (name category initial &optional level todo)
   "NAME is the top level headline for the project and INITIAL is the due date.
 
 CATEGORY will provide an agenda category to clarify which project
